@@ -1,28 +1,26 @@
 #!/usr/bin/env python3
-"""Copy the finished front page to the make.fun output directory.
+"""Entry point for the make.fun news-image-20261118 v3 entry.
 
-Standard library only. No network, no clock, no randomness.
-
-Usage:
-    MAKEFUN_OUTPUT_DIR=/output python3 main.py
-
-Writes $MAKEFUN_OUTPUT_DIR/entry.png (default /output).
+Copies the pre-rendered front page (entry.png, produced by draw.py)
+into the directory the harness asks for. Standard library only.
 """
 import os
 import shutil
-from pathlib import Path
+import sys
 
-BASE = Path(__file__).resolve().parent
-SRC = BASE / "entry.png"
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def main():
-    out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
-    out_dir.mkdir(parents=True, exist_ok=True)
-    dst = out_dir / "entry.png"
-    shutil.copyfile(SRC, dst)
-    print(f"wrote {dst} ({dst.stat().st_size} bytes)")
+    out = os.environ.get("MAKEFUN_OUTPUT_DIR")
+    if not out:
+        print("MAKEFUN_OUTPUT_DIR is not set", file=sys.stderr)
+        return 1
+    os.makedirs(out, exist_ok=True)
+    shutil.copyfile(os.path.join(HERE, "entry.png"),
+                    os.path.join(out, "entry.png"))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
